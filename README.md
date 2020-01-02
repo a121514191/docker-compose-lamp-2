@@ -10,6 +10,35 @@ php文件:https://registry.hub.docker.com/_/php  (重要)
 
 ## 延續上次的試著加入CI專案
 
+進入 http://192.168.99.100:8080/ phpmyadmin 把專案的sql丟入
+
+在進去專案更改database密碼
+
+```
+$db['default'] = array(
+    'dsn' => '',
+    'hostname' => 'localhost',
+    'username' => 'root',
+    'password' => 'admin',
+    'database' => 'ngbc',
+    'dbdriver' => 'mysqli',
+    'dbprefix' => '',
+    'pconnect' => false,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => false,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt' => false,
+    'compress' => false,
+    'stricton' => false,
+    'failover' => array(),
+    'save_queries' => true,
+);
+```
+之後查看網頁
+
 ### 錯誤1
 
 ![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/error1.PNG)
@@ -46,92 +75,38 @@ PHP 模組目錄: /usr/lib64/php/modules/
 
 ![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/find_php_ini.PNG)
 
-
-
-### Step3:將參考網址的檔案下載到當前目錄(我的是C:\Program Files\Docker Toolbox)
-
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/download.PNG)
-
-### Step4:進入該資料夾(進入要執行的資料夾，docker-compose要能執行，一定要在當前目錄下，且有yml檔，才能執行)
+於是我在php的docker-file裡 加入一些新的指令
 
 ```
-cd docker-lamp-test/2_docker-compose-build-image
+FROM php:7.1-apache
+LABEL maintainer="titangene.tw@gmail.com"
+
+# Install the PHP extensions we need
+RUN set -ex; \
+	apt-get update; \
+	apt-get install vim -y; \  
+	mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"; \
+	docker-php-ext-install -j$(nproc) pdo_mysql; \
+	rm -rf /var/lib/apt/lists/*
+
+RUN a2enmod rewrite
 ```
+因為我是進入container 裡去修改php.ini
 
-### Step5:檢查 docker-compose.yml 檔案
+本身container裡並沒有 vim ，所以要安裝 並加入-y (apt-get install vim -y; \ )
 
-說明:
+然後加入那串官網裡找到的 (mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"; \)
 
-```
-build: ./php (套用當前目錄下/php裡面的Dockerfile去執行裡面的敘述去下載) 
-       ./mysql (套用當前目錄下/php裡面的Dockerfile去執行裡面的敘述去下載)
+執行:
 
-image: phpmyadmin/phpmyadmin (套用線上github上的image檔來下載)
+找到mv那一句
 
-volumes:
-  前(本地端檔案):後(容器端檔案)
-  
-```
-文件:
+![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/find_php_ini.PNG)
 
-```
-version: '3.3'
+之後進入container裡面 找到路徑下的php.ini
 
-services:
-  phpapache:
-    build: ./php
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - mysql
-    volumes:
-      - /c/Users/Default/test001/www:/var/www/html
-  mysql:
-    build: ./mysql
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./mysql/data:/var/lib/mysql
-    environment:
-      MYSQL_USERNAME: titan
-      MYSQL_PASSWORD: password
-      MYSQL_ROOT_PASSWORD: admin
-      #MYSQL_DATABASE: testdb
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    ports:
-      - "8080:80"
-    depends_on:
-      - mysql
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306     
-```
 
-### Step6:執行docker-compose
 
-```
-docker-compose up -d 或是 (docker-compose -f 自定義名稱.yml up -d)
-```
-
-### Step7:進入容器檢查volume是否有對應到本地端檔案
-
-```
-docker exec -it (容器編碼) bash       
-```
-檢查是否有同步到本地端
-
-```
-mkdir 任意目錄名
-```
-建立後在本端發現新增的資料夾即可
-
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/volume.PNG)
-
-### Step8:先測試將檔案丟入測試環境 查看(目前只成功靜態網站)
-
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/test001.PNG)
 
 ## 後續問題
 1.目前ip 192.168.99.100 是我docker-toolbox vm的 

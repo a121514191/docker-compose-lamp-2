@@ -12,15 +12,17 @@ php文件:https://registry.hub.docker.com/_/php  (重要)
 
 ### 錯誤1
 
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/docker.PNG)
+![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/error1.PNG)
 
 網路上解決辦法
 
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/docker.PNG)
+![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/error1_ok.PNG)
+
+但不確定正不正確，因為沒問題就先跳過
 
 ### 錯誤2
 
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/ip.PNG)
+![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/error2.PNG)
 
 網路上的解決辦法都是跟php.ini檔 有關
 
@@ -34,15 +36,15 @@ PHP 模組設定檔目錄: /etc/php.d/
 
 PHP 模組目錄: /usr/lib64/php/modules/
 
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/ip.PNG)
+![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/etc-phpini.PNG)
 
 但由於這次安裝是按照他人的docker-compose 去裝所以配置文件的放置並不一樣
 
 之後只好查詢dockerfile 裡的php是怎麼建的
 
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/ip.PNG)
+![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/php-apache-ini.PNG)
 
-![](https://github.com/a121514191/docker-compose-lamp/blob/master/ip.PNG)
+![](https://github.com/a121514191/docker-compose-lamp-2/blob/master/find_php_ini.PNG)
 
 
 
